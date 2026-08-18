@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#173a67">
+  <title>Louvai ao Senhor</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header class="topbar">
+    <button id="backBtn" class="icon-btn hidden" aria-label="Voltar">‹</button>
+    <div><div class="brand">Louvai ao Senhor</div><div class="subtitle">Hinário offline</div></div>
+    <button id="themeBtn" class="icon-btn" aria-label="Alternar modo escuro">☾</button>
+  </header>
+
+  <main id="homeView" class="view">
+    <section class="hero card">
+      <div class="book-mark">♪</div>
+      <h1>Louvai ao Senhor</h1>
+      <p>Encontre rapidamente um hino pelo número, nome ou trecho da letra.</p>
+      <input id="searchInput" type="search" placeholder="Número, nome ou trecho..." autocomplete="off">
+      <div id="searchInfo" class="muted"></div>
+    </section>
+
+    <nav class="quick-grid">
+      <button data-list="today"><span>☀</span>Culto de Hoje</button>
+      <button data-list="favorites"><span>★</span>Favoritos</button>
+      <button data-list="recent"><span>◷</span>Recentes</button>
+      <button id="categoriesBtn"><span>☷</span>Categorias</button>
+    </nav>
+
+    <section class="section-head"><h2 id="listTitle">Todos os hinos</h2><span id="count"></span></section>
+    <div id="hymnList" class="hymn-list"></div>
+  </main>
+
+  <main id="detailView" class="view hidden">
+    <article class="hymn-card">
+      <div class="detail-head">
+        <div><div id="hymnNumber" class="eyebrow"></div><h1 id="hymnTitle"></h1></div>
+        <button id="favoriteBtn" class="icon-btn star" aria-label="Favoritar">☆</button>
+      </div>
+      <div class="detail-tools">
+        <button id="prevBtn">‹ Anterior</button><button id="readingBtn">Modo leitura</button><button id="nextBtn">Próximo ›</button>
+      </div>
+      <div class="font-tools"><button id="fontDown">A−</button><span id="fontLabel">100%</span><button id="fontUp">A+</button></div>
+      <pre id="lyrics"></pre>
+      <div class="action-stack">
+        <button id="todayBtn" class="primary">Adicionar ao Culto de Hoje</button>
+        <button id="editBtn">Editar título e letra</button>
+        <button id="hymnCategoriesBtn">Categorias deste hino</button>
+      </div>
+    </article>
+  </main>
+
+  <main id="categoriesView" class="view hidden">
+    <section class="section-head"><h1>Categorias</h1><button id="addCategoryBtn" class="primary small">+ Nova</button></section>
+    <div id="categoryList" class="category-list"></div>
+  </main>
+
+  <div id="modal" class="modal hidden" role="dialog" aria-modal="true"><div class="modal-card">
+    <h2 id="modalTitle"></h2><div id="modalBody"></div><div id="modalActions" class="modal-actions"></div>
+  </div></div>
+
+  <script src="hymns.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

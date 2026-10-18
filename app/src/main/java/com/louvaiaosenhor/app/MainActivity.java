@@ -27,6 +27,12 @@ public class MainActivity extends Activity {
     }
 
     @Override
+    protected void onRestart() {
+        super.onRestart();
+        webView.evaluateJavascript("if(window.selection) selection()", null);
+    }
+
+    @Override
     public void onBackPressed() {
         webView.evaluateJavascript("window.handleAndroidBack ? window.handleAndroidBack() : 'home'", result -> {
             if ("\"handled\"".equals(result)) return;

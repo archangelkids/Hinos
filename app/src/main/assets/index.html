@@ -14,12 +14,12 @@
     <button id="themeBtn" class="icon-btn" aria-label="Alternar modo escuro">☾</button>
   </header>
 
-  <main id="selectionView" class="view"><section class="hero card"><div class="book-mark">♪</div><h1>Escolha o hinário</h1><p>Suas letras e listas sempre disponíveis offline.</p><div class="action-stack"><button class="primary" data-book="louvai">Louvai ao Senhor · 180 hinos</button><button class="primary" data-book="cantor">Cantor Cristão · 578 hinos</button></div></section></main>
+  <main id="selectionView" class="view"><section class="hero card"><div class="book-mark">♪</div><h1>Escolha o hinário</h1><p>Suas letras e listas sempre disponíveis offline.</p><div id="bookChoices" class="book-choices"></div></section></main>
   <main id="homeView" class="view hidden"><button id="selectionBtn">‹ Escolher outro hinário</button>
     <section class="hero card">
       <div class="book-mark">♪</div>
       <h1>Louvai ao Senhor</h1>
-      <p>Encontre rapidamente um hino pelo número, nome ou trecho da letra.</p>
+      <p id="bookDescription">Encontre rapidamente um hino pelo número, nome ou trecho da letra.</p><p id="bookNotice" class="source-note hidden"></p>
       <input id="searchInput" type="search" placeholder="Número, nome ou trecho..." autocomplete="off">
       <div id="searchInfo" class="muted"></div>
     </section>
@@ -45,7 +45,7 @@
         <button id="prevBtn">‹ Anterior</button><button id="readingBtn">Modo leitura</button><button id="nextBtn">Próximo ›</button>
       </div>
       <div class="font-tools"><button id="fontDown">A−</button><span id="fontLabel">100%</span><button id="fontUp">A+</button></div>
-      <div id="lyrics"></div>
+      <p id="sourceNote" class="source-note hidden"></p><div id="lyrics"></div><div id="scanPage" class="hidden"></div>
       <div class="action-stack">
         <button id="todayBtn" class="primary">Adicionar ao Culto de Hoje</button>
         <button id="editBtn">Editar título e letra</button>

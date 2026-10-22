@@ -4,6 +4,10 @@ const store={
   set:(k,v)=>localStorage.setItem(k,JSON.stringify(v))
 };
 let selectedBook=null;
+let scanZoom=store.get('canta:scanZoom',1);
+const isScanBook=()=>window.HYMN_BOOKS[selectedBook]?.kind==='pages';
+const unit=(n)=>isScanBook()?`página${n===1?'':'s'}`:`hino${n===1?'':'s'}`;
+
 let originals=[], hymns=[], active=null, listMode='all';
 let favorites=store.get('favorites',[]), recent=store.get('recent',[]), today=store.get('today',[]);
 let edits=store.get('edits',{}), customAssignments=store.get('assignments',{});
@@ -17,7 +21,19 @@ function loadBookState(){
  const read=(k,d)=>store.get(selectedBook+':'+k,selectedBook==='louvai'?store.get(k,d):d);
  favorites=read('favorites',[]);recent=read('recent',[]);today=read('today',[]);edits=read('edits',{});customAssignments=read('assignments',{});categoryNames=read('categoryNames',[]);
 }
-function chooseBook(key){selectedBook=key;originals=window.HYMN_BOOKS[key].hymns;loadBookState();hydrate();$('.brand').textContent=window.HYMN_BOOKS[key].name;$('.hero h1').textContent=window.HYMN_BOOKS[key].name;goHome(true)}
+function chooseBook(key){
+ const book=window.HYMN_BOOKS[key];if(!book)return;
+ selectedBook=key;originals=book.hymns;loadBookState();hydrate();
+ $('.brand').textContent=book.name;$('#homeView .hero h1').textContent=book.name;
+ $('#bookDescription').textContent=isScanBook()?'Leia as páginas originais ou pesquise no texto reconhecido.':'Encontre rapidamente um hino pelo número, nome ou trecho da letra.';
+ $('#bookNotice').textContent=book.notice||'';$('#bookNotice').classList.toggle('hidden',!book.notice);
+ $('#searchInput').placeholder=isScanBook()?'Número impresso, título ou trecho...':'Número, nome ou trecho...';
+ $('#fontDown').textContent=isScanBook()?'−':'A−';$('#fontUp').textContent=isScanBook()?'+':'A+';
+ $('#editBtn').textContent=isScanBook()?'Editar texto reconhecido da página':'Editar título e letra';
+ $('#hymnCategoriesBtn').textContent=isScanBook()?'Categorias desta página':'Categorias deste hino';
+ $('#favoriteBtn').setAttribute('aria-label',isScanBook()?'Favoritar página':'Favoritar');
+ goHome(true);
+}
 function selection(){listMode='all';$('#searchInput').value='';selectedBook=null;active=null;hymns=[];closeModal();document.body.classList.remove('reading');$('.brand').textContent='Hinários offline';show('#selectionView')}
 function persist(){bookSet('favorites',favorites);bookSet('recent',recent);bookSet('today',today);bookSet('edits',edits);bookSet('assignments',customAssignments);bookSet('categoryNames',categoryNames);bookSet('fontScale',fontScale)}
 function hydrate(){hymns=originals.map(h=>({...h,...(edits[h.number]||{}),categories:[]}))}
@@ -27,6 +43,7 @@ async function boot(){
   bind(); selection();
 }
 function bind(){
+ $('#bookChoices').innerHTML=Object.entries(window.HYMN_BOOKS).map(([key,b])=>`<button class="book-choice" data-book="${key}"><strong>${escapeHtml(b.name)}</strong><span>${b.hymns.length} ${b.kind==='pages'?'páginas digitalizadas':'hinos'}${b.kind==='pages'?' · busca por texto reconhecido':''}</span></button>`).join('');
  $$('[data-book]').forEach(b=>b.onclick=()=>chooseBook(b.dataset.book));
  $('#selectionBtn').onclick=selection;
   $('#searchInput').addEventListener('input',()=>{listMode='search';renderList()});
@@ -54,7 +71,7 @@ function handleInternalBack(){
 }
 window.handleAndroidBack=()=>handleInternalBack()?'handled':'home';
 function filtered(){
-  const q=norm($('#searchInput').value.trim()); let nums=null, title='Todos os hinos';
+  const q=norm($('#searchInput').value.trim()); let nums=null, title=isScanBook()?'Páginas do PDF':'Todos os hinos';
   if(listMode==='favorites'){nums=favorites;title='Favoritos'}
   if(listMode==='recent'){nums=recent;title='Recentes'}
   if(listMode==='today'){nums=today;title='Culto de Hoje'}
@@ -64,36 +81,44 @@ function filtered(){
   return {rows,title:q?'Resultados da busca':title}
 }
 function renderList(){
-  show('#homeView'); const {rows,title}=filtered(); $('#listTitle').textContent=title;$('#count').textContent=`${rows.length} hino${rows.length===1?'':'s'}`;
-  $('#searchInfo').textContent=$('#searchInput').value?`${rows.length} resultado${rows.length===1?'':'s'}`:`${hymns.length} hinos disponíveis offline`;
-  $('#hymnList').innerHTML=rows.length?rows.map(h=>`<button class="hymn-row" data-n="${h.number}"><span class="number">${h.number}</span><span><span class="name">${escapeHtml(h.title)}</span><span class="cats">${escapeHtml(currentCategories(h).join(' · ')||'Sem categoria')}</span></span><span class="fav">${favorites.includes(h.number)?'★':''}</span></button>`).join(''):'<div class="empty">Nenhum hino encontrado.</div>';
+  show('#homeView'); const {rows,title}=filtered(); $('#listTitle').textContent=title;$('#count').textContent=`${rows.length} ${unit(rows.length)}`;
+  $('#searchInfo').textContent=$('#searchInput').value?`${rows.length} resultado${rows.length===1?'':'s'}`:`${hymns.length} ${unit(hymns.length)} disponíveis offline`;
+  $('#hymnList').innerHTML=rows.length?rows.map(h=>`<button class="hymn-row" data-n="${h.number}"><span class="number">${isScanBook()?'p. ':''}${h.number}</span><span><span class="name">${escapeHtml(h.title)}</span><span class="cats">${escapeHtml(currentCategories(h).join(' · ')||(isScanBook()?'Página original · texto a revisar':'Sem categoria'))}</span></span><span class="fav">${favorites.includes(h.number)?'★':''}</span></button>`).join(''):'<div class="empty">Nenhum resultado encontrado.</div>';
   $$('.hymn-row').forEach(b=>b.onclick=()=>openHymn(+b.dataset.n));
 }
 function openHymn(n){
   active=hymns.find(h=>h.number===n); if(!active)return; recent=[n,...recent.filter(x=>x!==n)].slice(0,20);persist();
-  $('#hymnNumber').textContent=`HINO ${n}`;$('#hymnTitle').textContent=active.title;$('#lyrics').innerHTML=formatLyrics(active.lyrics);
+  $('#hymnNumber').textContent=`${isScanBook()?'PÁGINA DO PDF':'HINO'} ${n}`;$('#hymnTitle').textContent=active.title;renderContent();
   $('#favoriteBtn').textContent=favorites.includes(n)?'★':'☆';$('#todayBtn').textContent=today.includes(n)?'Remover do Culto de Hoje':'Adicionar ao Culto de Hoje';
   $('#prevBtn').disabled=active===hymns[0];$('#nextBtn').disabled=active===hymns[hymns.length-1];updateFont();show('#detailView');
 }
 function toggleFavorite(){const n=active.number;favorites=favorites.includes(n)?favorites.filter(x=>x!==n):[...favorites,n];persist();openHymn(n)}
 function toggleToday(){const n=active.number;today=today.includes(n)?today.filter(x=>x!==n):[...today,n];persist();openHymn(n)}
-function setFont(delta){fontScale=Math.min(1.8,Math.max(.8,Math.round((fontScale+delta)*10)/10));persist();updateFont()}
-function updateFont(){document.documentElement.style.setProperty('--font-scale',fontScale);$('#fontLabel').textContent=`${Math.round(fontScale*100)}%`}
+function setFont(delta){if(isScanBook()){scanZoom=Math.min(4,Math.max(.75,scanZoom+Math.sign(delta)*.25));store.set('canta:scanZoom',scanZoom);updateFont();return}fontScale=Math.min(1.8,Math.max(.8,Math.round((fontScale+delta)*10)/10));persist();updateFont()}
+function updateFont(){document.documentElement.style.setProperty('--font-scale',fontScale);$('#fontLabel').textContent=isScanBook()?`${Math.round(scanZoom*100)}% imagem`:`${Math.round(fontScale*100)}%`;if($('#scanImage'))$('#scanImage').style.width=`${scanZoom*100}%`}
+function renderContent(){
+ const scanned=isScanBook();$('#scanPage').classList.toggle('hidden',!scanned);$('#lyrics').classList.toggle('hidden',scanned);
+ $('#sourceNote').textContent=active.sourceNote||'';$('#sourceNote').classList.toggle('hidden',!active.sourceNote);
+ if(!scanned){$('#scanPage').innerHTML='';$('#lyrics').innerHTML=formatLyrics(active.lyrics);return}
+ $('#lyrics').innerHTML='';
+ $('#scanPage').innerHTML=`<p class="source-note">Página fotografada: use + e − para ampliar e deslize a imagem para os lados. Os números dos cânticos continuam como impressos no original.</p><button id="fullPageBtn" class="small">Ver página completa</button><div class="scan-scroll" tabindex="0" aria-label="Página digitalizada com ampliação"><img id="scanImage" src="${escapeAttr(active.scan)}" alt="Canta Alegria — página ${active.page} do PDF original"></div><details class="ocr-details"><summary>${edits[active.number]?'Seu texto editado':'Texto reconhecido automaticamente — revisar'}</summary><p class="muted">O reconhecimento pode trocar palavras, números e a ordem dos trechos. Confira a imagem antes de usar a letra.</p><div class="ocr-text">${formatLyrics(active.lyrics)}</div></details>`;
+ let full=false;$('#fullPageBtn').onclick=()=>{full=!full;$('#scanImage').src=full?active.fullScan:active.scan;$('#fullPageBtn').textContent=full?'Focar no conteúdo':'Ver página completa'};
+}
 function openEditor(){
-  modal('Editar hino',`<label>Título</label><input id="editTitle" type="text" value="${escapeAttr(active.title)}"><label>Letra</label><textarea id="editLyrics">${escapeHtml(active.lyrics)}</textarea>`,[
+  modal(isScanBook()?'Editar texto da página':'Editar hino',`<label>Título</label><input id="editTitle" type="text" value="${escapeAttr(active.title)}"><label>Letra</label><textarea id="editLyrics">${escapeHtml(active.lyrics)}</textarea>`,[
     ['Cancelar',closeModal],['Restaurar original',()=>confirmAction('Restaurar texto original?',()=>{delete edits[active.number];persist();hydrate();closeModal();openHymn(active.number)})],['Revisar alteração',reviewEdit,'primary']]);
 }
 function reviewEdit(){const title=$('#editTitle').value.trim(),lyrics=$('#editLyrics').value.trim();if(!title||!lyrics)return alert('Preencha o título e a letra.');modal('Confirmar alteração',`<p>Revise antes de salvar:</p><div class="card" style="padding:12px"><strong>${escapeHtml(title)}</strong><pre style="white-space:pre-wrap">${escapeHtml(lyrics)}</pre></div>`,[['Voltar',openEditor],['Confirmar e salvar',()=>{edits[active.number]={title,lyrics};persist();hydrate();closeModal();openHymn(active.number)},'primary']])}
 function showCategories(){renderCategories();show('#categoriesView')}
 function renderCategories(){
-  $('#categoryList').innerHTML=categoryNames.length?categoryNames.map(c=>{const count=hymns.filter(h=>currentCategories(h).includes(c)).length;return `<div class="category-row"><button class="cat-main" data-open="${escapeAttr(c)}"><strong>${escapeHtml(c)}</strong><small>${count} hino${count===1?'':'s'}</small></button><button class="mini" data-ren="${escapeAttr(c)}">Renomear</button><button class="mini" data-del="${escapeAttr(c)}">Excluir</button></div>`}).join(''):'<div class="empty">Nenhuma categoria criada. Toque em “+ Nova” para começar.</div>';
+  $('#categoryList').innerHTML=categoryNames.length?categoryNames.map(c=>{const count=hymns.filter(h=>currentCategories(h).includes(c)).length;return `<div class="category-row"><button class="cat-main" data-open="${escapeAttr(c)}"><strong>${escapeHtml(c)}</strong><small>${count} ${unit(count)}</small></button><button class="mini" data-ren="${escapeAttr(c)}">Renomear</button><button class="mini" data-del="${escapeAttr(c)}">Excluir</button></div>`}).join(''):'<div class="empty">Nenhuma categoria criada. Toque em “+ Nova” para começar.</div>';
   $$('[data-open]').forEach(b=>b.onclick=()=>{listMode='cat:'+b.dataset.open;$('#searchInput').value='';renderList()});
   $$('[data-ren]').forEach(b=>b.onclick=()=>renameCategory(b.dataset.ren));$$('[data-del]').forEach(b=>b.onclick=()=>deleteCategory(b.dataset.del));
 }
 function addCategory(){modal('Nova categoria','<label>Nome</label><input id="catName" type="text" placeholder="Ex.: Batismo">',[['Cancelar',closeModal],['Adicionar',()=>{const n=$('#catName').value.trim();if(n&&!categoryNames.includes(n)){categoryNames.push(n);categoryNames.sort((a,b)=>a.localeCompare(b,'pt-BR'));persist();closeModal();renderCategories()}},'primary']])}
 function renameCategory(old){modal('Renomear categoria',`<label>Novo nome</label><input id="catName" type="text" value="${escapeAttr(old)}">`,[['Cancelar',closeModal],['Salvar',()=>{const n=$('#catName').value.trim();if(!n)return;categoryNames=categoryNames.map(c=>c===old?n:c);hymns.forEach(h=>{const cats=currentCategories(h);if(cats.includes(old))customAssignments[h.number]=unique(cats.map(c=>c===old?n:c))});persist();closeModal();renderCategories()},'primary']])}
 function deleteCategory(c){confirmAction(`Excluir a categoria “${c}”?`,()=>{categoryNames=categoryNames.filter(x=>x!==c);hymns.forEach(h=>{if(currentCategories(h).includes(c))customAssignments[h.number]=currentCategories(h).filter(x=>x!==c)});persist();closeModal();renderCategories()})}
-function openHymnCategories(){const chosen=currentCategories(active);const body=categoryNames.length?`<div class="check-list">${categoryNames.map(c=>`<label><input type="checkbox" value="${escapeAttr(c)}" ${chosen.includes(c)?'checked':''}> ${escapeHtml(c)}</label>`).join('')}</div>`:'<div class="empty">Nenhuma categoria criada. Crie categorias na tela Categorias.</div>';modal('Categorias deste hino',body,[['Cancelar',closeModal],['Salvar',()=>{customAssignments[active.number]=[...$('#modalBody').querySelectorAll('input:checked')].map(x=>x.value);persist();closeModal();openHymn(active.number)},'primary']])}
+function openHymnCategories(){const chosen=currentCategories(active);const body=categoryNames.length?`<div class="check-list">${categoryNames.map(c=>`<label><input type="checkbox" value="${escapeAttr(c)}" ${chosen.includes(c)?'checked':''}> ${escapeHtml(c)}</label>`).join('')}</div>`:'<div class="empty">Nenhuma categoria criada. Crie categorias na tela Categorias.</div>';modal(isScanBook()?'Categorias desta página':'Categorias deste hino',body,[['Cancelar',closeModal],['Salvar',()=>{customAssignments[active.number]=[...$('#modalBody').querySelectorAll('input:checked')].map(x=>x.value);persist();closeModal();openHymn(active.number)},'primary']])}
 function modal(title,body,actions){$('#modalTitle').textContent=title;$('#modalBody').innerHTML=body;$('#modalActions').innerHTML='';actions.forEach(([label,fn,cls])=>{const b=document.createElement('button');b.textContent=label;if(cls)b.classList.add(cls);b.onclick=fn;$('#modalActions').appendChild(b)});$('#modal').classList.remove('hidden')}
 function closeModal(){$('#modal').classList.add('hidden')}
 function confirmAction(text,fn){modal('Confirmação',`<p>${escapeHtml(text)}</p>`,[['Cancelar',closeModal],['Confirmar',fn,'primary']])}

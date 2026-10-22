@@ -1,4 +1,7 @@
 {
-  "fontes\\pdfs\\cantor.pdf": "ffbaf7d1a05f7d751c201a49874f708d9027de23d86fbfca9673983a1bd60f27",
-  "fontes\\pdfs\\louvai.pdf": "d8a6069aa5e2aedfa1e469e62f161419366edc2d403f114ebc346b9a13bd5c34"
+  "canta.pdf": "9e49c77b87a77088ad8d0865d90e1ec482364309d4790c2f38d0aabf86040b40",
+  "cantor.pdf": "ffbaf7d1a05f7d751c201a49874f708d9027de23d86fbfca9673983a1bd60f27",
+  "harpa.pdf": "bf46fe114256184253137f050802dacebe93407b0ea632eb89cc8833704e64ec",
+  "louvai.pdf": "d8a6069aa5e2aedfa1e469e62f161419366edc2d403f114ebc346b9a13bd5c34",
+  "metrosul.pdf": "068cfbdb0357a1a68fc090949b6e4613823f564956edfff7f3672ae366ac05bf"
 }

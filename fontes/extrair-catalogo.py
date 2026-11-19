@@ -53,23 +53,14 @@ for key,name,columns in config:
     nums=[h['number'] for h in hymns]
     books[key]={'name':name,'kind':'hymns','hymns':hymns}
     report.append({'key':key,'book':name,'pages':page_count,'count':len(hymns),'first':min(nums),'last':max(nums),'missing_numbers':[n for n in range(min(nums),max(nums)+1) if n not in nums],'repeated_numbers':[h['number'] for h in hymns if h.get('variants')]})
-# Canta's source is photographed, so the page image is the primary reading view.
-# Number is a PDF page identifier, not an assigned hymn number.
-scans=[]
-with pdfplumber.open(root/'pdfs/canta.pdf') as pdf:
-    out=assets/'scans/canta';out.mkdir(parents=True,exist_ok=True)
-    for pn,page in enumerate(pdf.pages,1):
-        text=(root/'ocr/canta'/f'{pn:02}.txt').read_text(encoding='utf-8').strip()
-        full=out/f'{pn:02}-completa.jpg';crop=out/f'{pn:02}.jpg'
-        if not full.exists():page.to_image(resolution=220).original.convert('RGB').save(full,quality=85,optimize=True)
-        if not crop.exists():
-            box=(85,65,515,660) if pn<=3 else (85,65,400,500)
-            page.crop(box).to_image(resolution=260).original.convert('RGB').save(crop,quality=88,optimize=True)
-        scans.append({'number':pn,'page':pn,'title':f'Página {pn} do PDF','lyrics':text or 'Texto não reconhecido. Consulte a imagem original.','scan':f'scans/canta/{pn:02}.jpg','fullScan':f'scans/canta/{pn:02}-completa.jpg','flags':['OCR não revisado; leitura principal na imagem original'],'reviewed':False})
-books['canta']={'name':'Canta Alegria','kind':'pages','notice':'PDF fotografado: navegação por página. A numeração dos cânticos está nas imagens originais. A busca usa texto reconhecido automaticamente e pode falhar. Favoritos, Culto de Hoje, categorias e edições deste hinário se referem às páginas.','hymns':scans}
-report.append({'key':'canta','book':'Canta Alegria','pages':len(scans),'count':len(scans),'unit':'PDF pages, not hymn numbers','ocr_reviewed':False})
-# Keep the two original choices first, followed by the three additions.
-books={k:books[k] for k in ['louvai','cantor','canta','harpa','metrosul']}
+# Canta Alegria remains only as an archived source; it is intentionally excluded from the app catalogue.
+books.pop('canta',None)
+report=[r for r in report if r.get('key')!='canta']
+if not any(h['number']==181 for h in books['louvai']['hymns']):
+    books['louvai']['hymns'].append({'number':181,'title':'A Igreja é Franca','page':None,'sourcePages':[],'flags':['Adicionado manualmente pelo usuário'],'reviewed':False,'lyrics':'Coro:\nFranca, a igreja é franca\nNa palavra, na conduta e no amor! (No amor! -M)\nFranca, a igreja é franca\nNa pureza; sim, na fé e no Senhor! (No Senhor! -H)\n(FINAL)Na pureza; sim, na fé e no Senhor! (No Senhor! -H)\n\nVamos nós trabalhar e com Cristo andar;\nCom firmeza somos pois, uma só grei! (Uma grei! -M)\nVamos testemunhar, do Evangelho falar;\nCom certeza, os fiéis vão ver o Rei! (Ver o Rei! -H) (Bis)','sections':[]})
+report[0]['count']=181;report[0]['last']=181
+# Keep the two original choices first, followed by the two additions.
+books={k:books[k] for k in ['louvai','cantor','harpa','metrosul']}
 (root/'catalogo-original.json').write_text(json.dumps(books,ensure_ascii=False,indent=2),encoding='utf-8')
 (root/'extracao.json').write_text(json.dumps(report,ensure_ascii=False,indent=2),encoding='utf-8')
 (assets/'hymns.js').write_text('window.HYMN_BOOKS='+json.dumps(books,ensure_ascii=False)+';',encoding='utf-8')

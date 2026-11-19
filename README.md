@@ -1,4 +1,4 @@
-# Hinários offline — Android 12.0
+# Hinários offline — Android 13.0
 
 Projeto baseado no Android anterior, mantendo o identificador com.louvaiaosenhor.app. Android 6 ou superior. Nenhuma conexão é necessária para usar os hinos.
 
@@ -15,33 +15,26 @@ O APK produzido é de depuração, assinado automaticamente para instalação e 
 
 | Hinário | Conteúdo disponível |
 |---|---|
-| Louvai ao Senhor | 180 hinos, sem alterar os textos da versão anterior |
+| Louvai ao Senhor | 181 hinos, incluindo “A Igreja é Franca” |
 | Cantor Cristão | 578 hinos, mantendo a numeração original até 581 |
-| Canta Alegria | 48 páginas fotografadas, originais offline com ampliação e busca auxiliar |
 | Harpa Cristã | 524 números; as duas versões de 200 e 201 presentes no PDF foram preservadas |
 | Hinário Metrosul | 105 hinos |
 
-Os PDFs de Louvai e Cantor enviados novamente são idênticos aos anteriores (ver hashes em fontes/SHA256.json). Por isso não viraram opções duplicadas. Hinos que também aparecem em outro hinário continuam nos dois. O Cantor mantém as lacunas 240, 374 e 443 do PDF fornecido; nenhum número novo foi atribuído a esses espaços.
+O Canta Alegria foi removido da seleção, dos assets e dos dados carregados pelo aplicativo. Hinos que também aparecem em outro hinário continuam nos dois. O Cantor mantém as lacunas 240, 374 e 443 do PDF fornecido; nenhum número novo foi atribuído a esses espaços.
 
-A seleção aparece ao iniciar e ao voltar do segundo plano. Pesquisa, lista, anterior/próximo, favoritos, recentes, Culto de Hoje, categorias e edições ficam limitados ao hinário escolhido. Há botão explícito para trocar. Voltar fecha modal, sai da leitura, retorna à lista e à seleção; na seleção, dois toques saem.
+A seleção aparece ao iniciar e ao voltar do segundo plano. Pesquisa, filtros por hinário, categoria, favoritos, Culto de Hoje e número, anterior/próximo, categorias e edições ficam limitados ao hinário escolhido. Resultados da pesquisa exibem trecho da letra com destaque. Há botão explícito para trocar. Voltar fecha modal, sai da leitura, retorna à lista e à seleção; na seleção, dois toques saem.
 
-Favoritos, listas, categorias e edições anteriores de Louvai e Cantor continuam nas mesmas chaves. O modo escuro e a fonte são globais. Os três hinários novos têm dados separados. O identificador do aplicativo foi mantido e o versionCode subiu para 12.
+Favoritos, listas, categorias e edições anteriores de Louvai e Cantor continuam nas mesmas chaves. A tela Configurações reúne modo escuro, contraste extra, fonte sem serifa, tamanho da fonte, hinário preferido, exportação/importação de backup e versão. O identificador do aplicativo foi mantido e o versionCode subiu para 13.
 
-## Canta Alegria: leitura pelas páginas originais
-
-Esse arquivo contém fotografias, com trechos desfocados ou muito claros. Para não apresentar letras incorretas como definitivas, o aplicativo abre a imagem original. A lista identifica PÁGINAS DO PDF, sem atribuir esses números aos hinos. A numeração impressa dos cânticos permanece na imagem.
-
-É possível ampliar de 75% a 400%, deslizar para os lados e alternar entre o conteúdo e a página completa. O texto reconhecido fica recolhido em “Texto reconhecido automaticamente — revisar”. Ele serve de busca auxiliar e pode ser editado, mas não foi revisado integralmente e pode trocar palavras ou deixar de encontrar um trecho. As imagens continuam intactas após editar o texto.
-
-Neste hinário, favoritos, categorias, recentes e Culto de Hoje guardam PÁGINAS, que podem ter mais de um cântico. Ainda não há um catálogo individual confiável das letras do Canta Alegria. Para usar esse hinário com a mesma navegação por hino dos outros quatro, é necessário transcrever/revisar as letras e seu índice, ou fornecer uma versão com texto selecionável de boa qualidade. Todo o conteúdo das 48 páginas já fica disponível offline nesta versão.
+Os coros aparecem em blocos próprios. Marcas de vozes como `-M`, `-H`, `-B` e `-T` ficam destacadas. O botão “Avanço por estrofe e coro” alterna entre navegar por trechos e navegar por hinos.
 
 ## Fontes e extração
 
-fontes/pdfs contém cópias exatas dos cinco PDFs enviados, com nomes internos louvai, cantor, canta, harpa e metrosul. Eles são fontes de conferência e não são incluídos como PDFs no APK. As letras e as imagens necessárias ficam nos assets do aplicativo.
+fontes/pdfs contém cópias dos PDFs usados na extração. Canta Alegria ficou apenas como material antigo de conferência e não é carregado pelo app. Os PDFs são fontes de conferência e não são incluídos como PDFs no APK.
 
 O extrator fontes/extrair-catalogo.py requer pdfplumber e recria o catálogo, o relatório e hymns.js. Ele processa as duas colunas do Louvai em separado, ignora o índice inicial da Harpa, reconhece os títulos sem ponto e distingue estrofes de títulos pelos tamanhos de fonte e pelas maiúsculas. Mantém as duas ocorrências completas de 200 e 201 como versões identificadas do mesmo número, sem repetir incorretamente suas continuações.
 
-O texto auxiliar do Canta está em fontes/ocr/canta, uma transcrição automática por página. Os parâmetros e o procedimento estão em fontes/ocr/LEIA-ME.md. O extrator não depende de OCR para compilar o aplicativo: as entradas e imagens já estão incluídas. Leia VALIDACAO.md para os testes e limites.
+O extrator não depende de OCR para compilar o aplicativo. Leia VALIDACAO.md para os testes e limites.
 
 ## Testes
 

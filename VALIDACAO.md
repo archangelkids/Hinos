@@ -10,17 +10,10 @@
 - Metrosul: 45 páginas, 105 números únicos, 1–105; continuações entre páginas mantidas.
 - Nenhum hino extraído está sem título/letra nem contém caractere de substituição Unicode ou marcador cid. Não houve eliminação de hinos por repetirem em outro hinário.
 
-## Canta Alegria
-
-- 48 páginas fotografadas. Todas preservadas offline em imagens completas e em recortes do conteúdo; há botão para alternar.
-- Busca auxiliar por reconhecimento automático em português, com OCR separado por coluna nas páginas de duas colunas. O texto reconhecido tem erros e NÃO foi validado como letra definitiva.
-- As imagens originais são a leitura principal. Os números nos cartões são páginas do PDF; a numeração dos cânticos permanece como impressa nas imagens. Favoritos, categorias e listas deste hinário operam por página. Não se promete um índice individual dos cânticos.
-- Páginas representativas do começo, meio e final inspecionadas visualmente. A exposição e o foco variam no próprio PDF; esses problemas da fonte permanecem visíveis nas imagens.
-
 ## Testes offline
 
-Microsoft Edge, sem rede, janela de 412 × 915. Passaram: cinco opções sem duplicação; seleção inicial após recarga; contagens; isolamento da busca e das edições/favoritos/Culto de Hoje; persistência; restauração do original; categorias do aplicativo anterior; modo escuro e fonte; callbacks do Voltar Android; navegação pelas lacunas do Cantor; títulos especiais e versões repetidas da Harpa; busca auxiliar no Canta; leitura de páginas, zoom e alternância da página completa. Todas as 96 imagens do Canta carregaram offline. Sem erros JavaScript. Telas de seleção e leitura inspecionadas visualmente.
+Microsoft Edge, sem rede, janela de 412 × 915. Passaram: quatro opções sem Canta Alegria; seleção inicial; contagens; hino 181 do Louvai; coro separado; avanço por estrofe/coro; destaque de trecho pesquisado; filtros por hinário, categoria, favoritos e número; configurações visuais; isolamento das edições/favoritos/Culto de Hoje; persistência; navegação pelas lacunas do Cantor; títulos especiais e versões repetidas da Harpa. Sem erros JavaScript.
 
 ## Limites
 
-Não houve revisão humana integral de todas as letras, pontuação ou divisões de estrofes. As fotografias e o texto reconhecido do Canta exigem conferência antes de usar uma letra. Não há Java/SDK Android local; o APK não foi compilado nem executado em aparelho/emulador. O workflow GitHub Actions continua preparado para rodar os testes e gerar APK, mas ainda deve ser executado no repositório do usuário. Retorno do segundo plano e navegação por gesto/botão precisam de verificação em Android real.
+Não houve revisão humana integral de todas as letras, pontuação ou divisões de estrofes. O coro e as vozes são identificados por padrões do texto e podem precisar de ajuste manual. Não há Java/SDK Android local; o APK não foi compilado nem executado em aparelho/emulador. O workflow GitHub Actions continua preparado para rodar os testes e gerar APK, mas ainda deve ser executado no repositório do usuário. Retorno do segundo plano e navegação por gesto/botão precisam de verificação em Android real.

@@ -3,9 +3,9 @@
     "key": "louvai",
     "book": "Louvai ao Senhor",
     "pages": 52,
-    "count": 180,
+    "count": 181,
     "first": 1,
-    "last": 180,
+    "last": 181,
     "missing_numbers": [],
     "repeated_numbers": []
   },
@@ -45,13 +45,5 @@
     "last": 105,
     "missing_numbers": [],
     "repeated_numbers": []
-  },
-  {
-    "key": "canta",
-    "book": "Canta Alegria",
-    "pages": 48,
-    "count": 48,
-    "unit": "PDF pages, not hymn numbers",
-    "ocr_reviewed": false
   }
 ]

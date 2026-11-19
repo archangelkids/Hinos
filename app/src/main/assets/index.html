@@ -11,7 +11,7 @@
   <header class="topbar">
     <button id="backBtn" class="icon-btn hidden" aria-label="Voltar">‹</button>
     <div><div class="brand">Louvai ao Senhor</div><div class="subtitle">Hinário offline</div></div>
-    <button id="themeBtn" class="icon-btn" aria-label="Alternar modo escuro">☾</button>
+    <button id="settingsBtn" class="icon-btn" aria-label="Abrir configurações">⚙</button>
   </header>
 
   <main id="selectionView" class="view"><section class="hero card"><div class="book-mark">♪</div><h1>Escolha o hinário</h1><p>Suas letras e listas sempre disponíveis offline.</p><div id="bookChoices" class="book-choices"></div></section></main>
@@ -21,7 +21,13 @@
       <h1>Louvai ao Senhor</h1>
       <p id="bookDescription">Encontre rapidamente um hino pelo número, nome ou trecho da letra.</p><p id="bookNotice" class="source-note hidden"></p>
       <input id="searchInput" type="search" placeholder="Número, nome ou trecho..." autocomplete="off">
-      <div id="searchInfo" class="muted"></div>
+      <div class="filter-bar" aria-label="Filtros de pesquisa">
+        <label>Hinário <select id="bookFilter"></select></label>
+        <label>Filtro <select id="scopeFilter"><option value="all">Todos</option><option value="favorites">Favoritos</option><option value="today">Culto de Hoje</option><option value="recent">Recentes</option><option value="category">Categoria</option><option value="number">Número exato</option></select></label>
+        <select id="categoryFilter" class="hidden" aria-label="Filtrar por categoria"></select>
+        <input id="numberFilter" class="hidden" inputmode="numeric" pattern="[0-9]*" placeholder="Número" aria-label="Filtrar por número">
+      </div>
+      <div id="searchInfo" class="muted" aria-live="polite"></div>
     </section>
 
     <nav class="quick-grid">
@@ -29,6 +35,8 @@
       <button data-list="favorites"><span>★</span>Favoritos</button>
       <button data-list="recent"><span>◷</span>Recentes</button>
       <button id="categoriesBtn"><span>☷</span>Categorias</button>
+      <button id="themeBtn"><span>◐</span>Modo escuro</button>
+      <button id="settingsQuickBtn"><span>⚙</span>Configurações</button>
     </nav>
 
     <section class="section-head"><h2 id="listTitle">Todos os hinos</h2><span id="count"></span></section>
@@ -45,7 +53,9 @@
         <button id="prevBtn">‹ Anterior</button><button id="readingBtn">Modo leitura</button><button id="nextBtn">Próximo ›</button>
       </div>
       <div class="font-tools"><button id="fontDown">A−</button><span id="fontLabel">100%</span><button id="fontUp">A+</button></div>
-      <p id="sourceNote" class="source-note hidden"></p><div id="lyrics"></div><div id="scanPage" class="hidden"></div>
+      <button id="sequenceBtn" class="sequence-toggle" aria-pressed="false">Avanço por estrofe e coro: desativado</button>
+      <div id="sequenceInfo" class="muted" aria-live="polite"></div>
+      <p id="sourceNote" class="source-note hidden"></p><div id="lyrics"></div>
       <div class="action-stack">
         <button id="todayBtn" class="primary">Adicionar ao Culto de Hoje</button>
         <button id="editBtn">Editar título e letra</button>
@@ -57,6 +67,22 @@
   <main id="categoriesView" class="view hidden">
     <section class="section-head"><h1>Categorias</h1><button id="addCategoryBtn" class="primary small">+ Nova</button></section>
     <div id="categoryList" class="category-list"></div>
+  </main>
+
+  <main id="settingsView" class="view hidden">
+    <section class="card settings-card">
+      <h1>Configurações</h1>
+      <p class="muted">Preferências do aplicativo e ferramentas para seus dados locais.</p>
+      <label class="setting-row"><span>Hinário inicial</span><select id="initialBookSelect"></select></label>
+      <label class="setting-row"><span>Tamanho da fonte</span><select id="fontScaleSelect"><option value="0.8">80%</option><option value="0.9">90%</option><option value="1">100%</option><option value="1.1">110%</option><option value="1.2">120%</option><option value="1.3">130%</option><option value="1.5">150%</option><option value="1.8">180%</option></select></label>
+      <label class="setting-check"><input id="darkSetting" type="checkbox"> Modo escuro</label>
+      <label class="setting-check"><input id="contrastSetting" type="checkbox"> Contraste extra</label>
+      <label class="setting-check"><input id="sansSetting" type="checkbox"> Fonte sem serifa</label>
+      <button id="exportBtn" class="full">Exportar favoritos, categorias e edições</button>
+      <button id="importBtn" class="full">Importar backup</button><input id="importFile" class="hidden" type="file" accept="application/json">
+      <button id="resetBtn" class="full danger-outline">Restaurar configurações visuais</button>
+      <p id="versionInfo" class="muted"></p>
+    </section>
   </main>
 
   <div id="modal" class="modal hidden" role="dialog" aria-modal="true"><div class="modal-card">

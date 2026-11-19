@@ -7,7 +7,8 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    # Ubuntu 24.04 ainda é compatível com a versão do Playwright usada nos testes.
+    runs-on: ubuntu-24.04
     permissions:
       contents: read
 
@@ -39,6 +40,11 @@ jobs:
 
       - name: Configurar Android SDK
         uses: android-actions/setup-android@v3
+
+      - name: Instalar componentes do Android
+        run: |
+          sdkmanager "platform-tools" "platforms;android-35" "build-tools;35.0.0"
+          yes | sdkmanager --licenses > /dev/null || true
 
       - name: Gerar APK
         run: gradle assembleDebug

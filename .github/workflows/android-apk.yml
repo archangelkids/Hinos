@@ -38,13 +38,10 @@ jobs:
           npx playwright install --with-deps chromium
           node tests/offline.cjs
 
-      - name: Configurar Android SDK
-        uses: android-actions/setup-android@v3
-
       - name: Instalar componentes do Android
         run: |
-          sdkmanager "platform-tools" "platforms;android-35" "build-tools;35.0.0"
           yes | sdkmanager --licenses > /dev/null || true
+          sdkmanager "platform-tools" "platforms;android-35" "build-tools;35.0.0"
 
       - name: Gerar APK
         run: gradle assembleDebug
